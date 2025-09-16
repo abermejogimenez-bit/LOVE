@@ -17,7 +17,7 @@
     background:linear-gradient(180deg,var(--bg), #ffe4f3 120%);
     overflow-x:hidden;
   }
-  .stage{display:flex;align-items:center;justify-content:center;min-height:100%;}
+  .stage{display:flex;align-items:center;justify-content:center;min-height:100%; flex-direction: column;}
   .card{
     width:min(760px,96%);
     background:rgba(255,255,255,0.9);
@@ -25,6 +25,7 @@
     padding:36px;
     text-align:center;
     box-shadow:0 6px 18px rgba(0,0,0,0.12);
+    margin-bottom: 20px;
   }
   h1{margin:0 0 12px;font-size:28px;font-weight:700;color:#6b1550;}
   .controls{position:relative;height:160px;display:flex;align-items:center;justify-content:center;}
@@ -67,13 +68,23 @@
     0% { transform:translateX(0) translateY(0) scale(1); opacity:1;}
     100% { transform:translateX(var(--x)) translateY(-120vh) scale(1.5); opacity:0;}
   }
+  #playButton {
+    padding: 16px 28px;
+    font-size: 18px;
+    border-radius: 16px;
+    border: none;
+    background: #ff6fa3;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+  }
 </style>
 </head>
 <body>
-  <!-- 🎵 Música de fondo (se iniciará al primer click) -->
-  <audio id="backgroundAudio" loop>
-    <source src="musica.mp3" type="audio/mpeg">
-  </audio>
+
+  <!-- Botón inicial para reproducir música -->
+  <button id="playButton">🎵 Haz click para escuchar la música 🎵</button>
 
   <main class="stage">
     <section class="card">
@@ -104,6 +115,11 @@
     </div>
   </div>
 
+  <!-- Audio -->
+  <audio id="backgroundAudio" loop>
+    <source src="musica.mp3" type="audio/mpeg">
+  </audio>
+
 <script>
 (function(){
   const noBtn=document.getElementById('noBtn');
@@ -116,15 +132,14 @@
   const loveText=document.getElementById('loveText');
   const jokeText=document.getElementById('jokeText');
   const secondNoBtn=document.getElementById('secondNoBtn');
-
   const audio = document.getElementById('backgroundAudio');
+  const playButton = document.getElementById('playButton');
 
-  // Iniciar audio al primer click
-  function playAudioOnce() {
-    if(audio.paused){
-      audio.play().catch(()=>console.log("Audio bloqueado hasta interacción del usuario"));
-    }
-  }
+  // Botón inicial para iniciar la música
+  playButton.addEventListener('click', ()=>{
+    audio.play().catch(()=>console.log("Audio bloqueado"));
+    playButton.style.display='none'; // Ocultar el botón después de reproducir
+  });
 
   function placeInitial(){
     noBtn.style.left="60%";noBtn.style.top="50%";noBtn.style.transform="translate(-20%,-50%)";
@@ -155,7 +170,6 @@
   noBtn.addEventListener('click',handleNoAttempt);
 
   yesBtn.addEventListener('click',()=>{
-    playAudioOnce(); // Inicia la música
     overlay.style.display='flex';
     scene1.classList.add('show');
     setTimeout(()=>loveText.classList.add('show'),100);
@@ -214,9 +228,6 @@
       },300);
     }
   });
-
-  // También iniciar audio al hacer click en cualquier parte de la tarjeta
-  playground.addEventListener('click', playAudioOnce);
 })();
 </script>
 </body>
