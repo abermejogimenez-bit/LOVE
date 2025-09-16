@@ -1,1 +1,211 @@
-<!doctype html> <html lang="es"> <head> <meta charset="utf-8" /> <meta name="viewport" content="width=device-width,initial-scale=1" /> <title>¿Quieres estar para siempre conmigo?</title> <style> :root{ --bg:#ffd6e8; --accent:#ff6fa3; --button-bg:#fff; } html,body{ height:100%; margin:0; font-family:"Segoe UI", Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,var(--bg), #ffe4f3 120%); overflow-x:hidden; } .stage{display:flex;align-items:center;justify-content:center;min-height:100%;} .card{ width:min(760px,96%); background:rgba(255,255,255,0.9); border-radius:20px; padding:36px; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.12); } h1{margin:0 0 12px;font-size:28px;font-weight:700;color:#6b1550;} .controls{position:relative;height:160px;display:flex;align-items:center;justify-content:center;} .btn{border:0;background:var(--button-bg);padding:12px 22px;font-size:16px;border-radius:12px;box-shadow:0 6px 14px rgba(0,0,0,0.12);cursor:pointer;position:absolute;min-width:110px;} .btn-yes{left:50%;transform:translate(-150%,0);} .btn-no{left:50%;transform:translate(20%,0);} .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);overflow:hidden;} .scene{ background:var(--accent); color:white; border-radius:22px; padding:34px; width:90%; max-width:600px; text-align:center; transform:scale(.9); opacity:0; transition:opacity .4s ease, transform .4s ease; position:relative; overflow:hidden; } .scene.show{transform:scale(1);opacity:1;} .heart{width:120px;margin:10px auto;display:block;animation:pulse 1.2s infinite;} @keyframes pulse{0%{transform:scale(.95);}50%{transform:scale(1.05);}100%{transform:scale(.95);}} .fade-in{opacity:0;transition:opacity .5s ease;} .fade-in.show{opacity:1;} .delayed{opacity:0;transform:translateY(10px);transition:opacity .5s ease, transform .5s ease;} .delayed.show{opacity:1;transform:translateY(0);} .emoji-big{font-size:90px;margin-bottom:14px;} .heart-floating { position:absolute; bottom:-30px; left:50%; font-size:24px; color:white; animation:floatUp 3s linear forwards; opacity:0.8; } @keyframes floatUp { 0% { transform:translateX(0) translateY(0) scale(1); opacity:1;} 100% { transform:translateX(var(--x)) translateY(-120vh) scale(1.5); opacity:0;} } </style> </head> <body> <!-- 🎵 Música de fondo (empieza automáticamente y en bucle) --> <audio autoplay loop> <source src="musica.mp3" type="audio/mpeg"> </audio> <main class="stage"> <section class="card"> <h1>¿Quieres estar para siempre conmigo ?</h1> <div class="controls" id="playground"> <button id="yesBtn" class="btn btn-yes">Sí</button> <button id="noBtn" class="btn btn-no">No</button> </div> </section> </main> <!-- Escenas --> <div class="overlay" id="overlay"> <div class="scene" id="scene1"> <svg class="heart" viewBox="0 0 24 24"> <path fill="#fff" d="M12.1 21.35l-1.1-1.02C5.14 15.24 2 12.39 2 8.99 2 6.42 4.24 4.5 6.88 4.5c1.76 0 3.41.9 4.12 2.22.71-1.32 2.36-2.22 4.12-2.22C19.76 4.5 22 6.42 22 8.99c0 3.4-3.14 6.25-8.99 11.34l-1.0 1.02z"/> </svg> <h2 id="loveText" class="fade-in">yo también 😍😍</h2> <p id="jokeText" class="delayed">na es broma, puedes decir que no</p> <button id="secondNoBtn" class="btn delayed" style="position:static;margin-top:16px;">No</button> </div> <div class="scene" id="scene2"> <div class="emoji-big">🤨</div> <h2>ya no me quieres ehh</h2> </div> <div class="scene" id="scene3"> <h2 style="font-size:32px;">ya es tarde</h2> </div> </div> <script> (function(){ const noBtn=document.getElementById('noBtn'); const yesBtn=document.getElementById('yesBtn'); const playground=document.getElementById('playground'); const overlay=document.getElementById('overlay'); const scene1=document.getElementById('scene1'); const scene2=document.getElementById('scene2'); const scene3=document.getElementById('scene3'); const loveText=document.getElementById('loveText'); const jokeText=document.getElementById('jokeText'); const secondNoBtn=document.getElementById('secondNoBtn'); function placeInitial(){ noBtn.style.left="60%";noBtn.style.top="50%";noBtn.style.transform="translate(-20%,-50%)"; yesBtn.style.left="40%";yesBtn.style.top="50%";yesBtn.style.transform="translate(-150%,-50%)"; } placeInitial(); function randomPositionFor(element){ const area=playground.getBoundingClientRect(); const btnRect=element.getBoundingClientRect(); const padding=8; const maxX=area.width-btnRect.width-padding; const maxY=area.height-btnRect.height-padding; return {x:Math.random()*maxX+padding,y:Math.random()*maxY+padding}; } function moveNoButton(){ const pos=randomPositionFor(noBtn); noBtn.style.left=pos.x+"px"; noBtn.style.top=pos.y+"px"; noBtn.style.transform="translate(0,0)"; } function handleNoAttempt(e){e.preventDefault();moveNoButton();} noBtn.addEventListener('mouseenter',handleNoAttempt); noBtn.addEventListener('pointerover',handleNoAttempt); noBtn.addEventListener('touchstart',handleNoAttempt,{passive:false}); noBtn.addEventListener('click',handleNoAttempt); yesBtn.addEventListener('click',()=>{ overlay.style.display='flex'; scene1.classList.add('show'); setTimeout(()=>loveText.classList.add('show'),100); setTimeout(()=>{ loveText.classList.remove('show'); jokeText.classList.add('show'); secondNoBtn.classList.add('show'); },2000); }); secondNoBtn.addEventListener('click',()=>{ scene1.classList.remove('show'); setTimeout(()=>{ scene1.style.display='none'; scene2.style.display='block'; scene2.classList.add('show'); setTimeout(showScene3,2000); },300); }); function showScene3(){ scene2.classList.remove('show'); setTimeout(()=>{ scene2.style.display='none'; scene3.style.display='block'; scene3.classList.add('show'); startHearts(); },300); } function startHearts(){ for(let i=0;i<15;i++){ setTimeout(()=>{ const heart=document.createElement('div'); heart.className='heart-floating'; heart.style.left=Math.random()*100+"%"; heart.style.setProperty('--x', (Math.random()*60-30)+'px'); heart.textContent='🤍'; scene3.appendChild(heart); setTimeout(()=>heart.remove(),3000); },i*200); } } overlay.addEventListener('click',e=>{ if(e.target===overlay && !scene3.classList.contains('show')){ scene1.classList.remove('show'); scene2.classList.remove('show'); loveText.classList.remove('show'); jokeText.classList.remove('show'); secondNoBtn.classList.remove('show'); setTimeout(()=>{ overlay.style.display='none'; scene1.style.display='block'; scene2.style.display='none'; },300); } }); })(); </script> </body> </html>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>¿Quieres estar para siempre conmigo?</title>
+<style>
+  :root{
+    --bg:#ffd6e8;
+    --accent:#ff6fa3;
+    --button-bg:#fff;
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    font-family:"Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:linear-gradient(180deg,var(--bg), #ffe4f3 120%);
+    overflow-x:hidden;
+  }
+  .stage{display:flex;align-items:center;justify-content:center;min-height:100%;}
+  .card{
+    width:min(760px,96%);
+    background:rgba(255,255,255,0.9);
+    border-radius:20px;
+    padding:36px;
+    text-align:center;
+    box-shadow:0 6px 18px rgba(0,0,0,0.12);
+  }
+  h1{margin:0 0 12px;font-size:28px;font-weight:700;color:#6b1550;}
+  .controls{position:relative;height:160px;display:flex;align-items:center;justify-content:center;}
+  .btn{border:0;background:var(--button-bg);padding:12px 22px;font-size:16px;border-radius:12px;box-shadow:0 6px 14px rgba(0,0,0,0.12);cursor:pointer;position:absolute;min-width:110px;}
+  .btn-yes{left:50%;transform:translate(-150%,0);}
+  .btn-no{left:50%;transform:translate(20%,0);}
+
+  .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);overflow:hidden;}
+  .scene{
+    background:var(--accent);
+    color:white;
+    border-radius:22px;
+    padding:34px;
+    width:90%;
+    max-width:600px;
+    text-align:center;
+    transform:scale(.9);
+    opacity:0;
+    transition:opacity .4s ease, transform .4s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .scene.show{transform:scale(1);opacity:1;}
+  .heart{width:120px;margin:10px auto;display:block;animation:pulse 1.2s infinite;}
+  @keyframes pulse{0%{transform:scale(.95);}50%{transform:scale(1.05);}100%{transform:scale(.95);}}
+
+  .fade-in{opacity:0;transition:opacity .5s ease;}
+  .fade-in.show{opacity:1;}
+  .delayed{opacity:0;transform:translateY(10px);transition:opacity .5s ease, transform .5s ease;}
+  .delayed.show{opacity:1;transform:translateY(0);}
+  .emoji-big{font-size:90px;margin-bottom:14px;}
+
+  .heart-floating {
+    position:absolute;
+    bottom:-30px;
+    left:50%;
+    font-size:24px;
+    color:white;
+    animation:floatUp 3s linear forwards;
+    opacity:0.8;
+  }
+  @keyframes floatUp {
+    0% { transform:translateX(0) translateY(0) scale(1); opacity:1;}
+    100% { transform:translateX(var(--x)) translateY(-120vh) scale(1.5); opacity:0;}
+  }
+</style>
+</head>
+<body>
+  <!-- 🎵 Música de fondo -->
+  <audio autoplay loop>
+    <source src="musica.mp3" type="audio/mpeg">
+  </audio>
+
+  <main class="stage">
+    <section class="card">
+      <h1>¿Quieres estar para siempre conmigo ?</h1>
+      <div class="controls" id="playground">
+        <button id="yesBtn" class="btn btn-yes">Sí</button>
+        <button id="noBtn" class="btn btn-no">No</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Escenas -->
+  <div class="overlay" id="overlay">
+    <div class="scene" id="scene1">
+      <svg class="heart" viewBox="0 0 24 24">
+        <path fill="#fff" d="M12.1 21.35l-1.1-1.02C5.14 15.24 2 12.39 2 8.99 2 6.42 4.24 4.5 6.88 4.5c1.76 0 3.41.9 4.12 2.22.71-1.32 2.36-2.22 4.12-2.22C19.76 4.5 22 6.42 22 8.99c0 3.4-3.14 6.25-8.99 11.34l-1.0 1.02z"/>
+      </svg>
+      <h2 id="loveText" class="fade-in">yo también 😍😍</h2>
+      <p id="jokeText" class="delayed">na es broma, puedes decir que no</p>
+      <button id="secondNoBtn" class="btn delayed" style="position:static;margin-top:16px;">No</button>
+    </div>
+    <div class="scene" id="scene2">
+      <div class="emoji-big">🤨</div>
+      <h2>ya no me quieres ehh</h2>
+    </div>
+    <div class="scene" id="scene3">
+      <h2 style="font-size:32px;">ya es tarde</h2>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const noBtn=document.getElementById('noBtn');
+  const yesBtn=document.getElementById('yesBtn');
+  const playground=document.getElementById('playground');
+  const overlay=document.getElementById('overlay');
+  const scene1=document.getElementById('scene1');
+  const scene2=document.getElementById('scene2');
+  const scene3=document.getElementById('scene3');
+  const loveText=document.getElementById('loveText');
+  const jokeText=document.getElementById('jokeText');
+  const secondNoBtn=document.getElementById('secondNoBtn');
+
+  function placeInitial(){
+    noBtn.style.left="60%";noBtn.style.top="50%";noBtn.style.transform="translate(-20%,-50%)";
+    yesBtn.style.left="40%";yesBtn.style.top="50%";yesBtn.style.transform="translate(-150%,-50%)";
+  }
+  placeInitial();
+
+  function randomPositionFor(element){
+    const area=playground.getBoundingClientRect();
+    const btnRect=element.getBoundingClientRect();
+    const padding=8;
+    const maxX=area.width-btnRect.width-padding;
+    const maxY=area.height-btnRect.height-padding;
+    return {x:Math.random()*maxX+padding,y:Math.random()*maxY+padding};
+  }
+  function moveNoButton(){
+    const pos=randomPositionFor(noBtn);
+    noBtn.style.left=pos.x+"px";
+    noBtn.style.top=pos.y+"px";
+    noBtn.style.transform="translate(0,0)";
+  }
+  function handleNoAttempt(e){e.preventDefault();moveNoButton();}
+  noBtn.addEventListener('mouseenter',handleNoAttempt);
+  noBtn.addEventListener('pointerover',handleNoAttempt);
+  noBtn.addEventListener('touchstart',handleNoAttempt,{passive:false});
+  noBtn.addEventListener('click',handleNoAttempt);
+
+  yesBtn.addEventListener('click',()=>{
+    overlay.style.display='flex';
+    scene1.classList.add('show');
+    setTimeout(()=>loveText.classList.add('show'),100);
+    setTimeout(()=>{
+      loveText.classList.remove('show');
+      jokeText.classList.add('show');
+      secondNoBtn.classList.add('show');
+    },2000);
+  });
+
+  secondNoBtn.addEventListener('click',()=>{
+    scene1.classList.remove('show');
+    setTimeout(()=>{
+      scene1.style.display='none';
+      scene2.style.display='block';
+      scene2.classList.add('show');
+      setTimeout(showScene3,2000);
+    },300);
+  });
+
+  function showScene3(){
+    scene2.classList.remove('show');
+    setTimeout(()=>{
+      scene2.style.display='none';
+      scene3.style.display='block';
+      scene3.classList.add('show');
+      startHearts();
+    },300);
+  }
+
+  function startHearts(){
+    for(let i=0;i<15;i++){
+      setTimeout(()=>{
+        const heart=document.createElement('div');
+        heart.className='heart-floating';
+        heart.style.left=Math.random()*100+"%";
+        heart.style.setProperty('--x', (Math.random()*60-30)+'px');
+        heart.textContent='🤍';
+        scene3.appendChild(heart);
+        setTimeout(()=>heart.remove(),3000);
+      },i*200);
+    }
+  }
+
+  overlay.addEventListener('click',e=>{
+    if(e.target===overlay && !scene3.classList.contains('show')){
+      scene1.classList.remove('show');
+      scene2.classList.remove('show');
+      loveText.classList.remove('show');
+      jokeText.classList.remove('show');
+      secondNoBtn.classList.remove('show');
+      setTimeout(()=>{
+        overlay.style.display='none';
+        scene1.style.display='block';
+        scene2.style.display='none';
+      },300);
+    }
+  });
+})();
+</script>
+</body>
+</html>
