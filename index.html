@@ -31,7 +31,6 @@
   .btn{border:0;background:var(--button-bg);padding:12px 22px;font-size:16px;border-radius:12px;box-shadow:0 6px 14px rgba(0,0,0,0.12);cursor:pointer;position:absolute;min-width:110px;}
   .btn-yes{left:50%;transform:translate(-150%,0);}
   .btn-no{left:50%;transform:translate(20%,0);}
-
   .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);overflow:hidden;}
   .scene{
     background:var(--accent);
@@ -50,13 +49,11 @@
   .scene.show{transform:scale(1);opacity:1;}
   .heart{width:120px;margin:10px auto;display:block;animation:pulse 1.2s infinite;}
   @keyframes pulse{0%{transform:scale(.95);}50%{transform:scale(1.05);}100%{transform:scale(.95);}}
-
   .fade-in{opacity:0;transition:opacity .5s ease;}
   .fade-in.show{opacity:1;}
   .delayed{opacity:0;transform:translateY(10px);transition:opacity .5s ease, transform .5s ease;}
   .delayed.show{opacity:1;transform:translateY(0);}
   .emoji-big{font-size:90px;margin-bottom:14px;}
-
   .heart-floating {
     position:absolute;
     bottom:-30px;
@@ -73,9 +70,9 @@
 </style>
 </head>
 <body>
-  <!-- 🎵 Música de fondo (empieza automáticamente y en bucle) -->
-  <audio autoplay loop>
-    <source src="musica.mp3" >
+  <!-- 🎵 Música de fondo (se iniciará al primer click) -->
+  <audio id="backgroundAudio" loop>
+    <source src="musica.mp3" type="audio/mpeg">
   </audio>
 
   <main class="stage">
@@ -120,6 +117,15 @@
   const jokeText=document.getElementById('jokeText');
   const secondNoBtn=document.getElementById('secondNoBtn');
 
+  const audio = document.getElementById('backgroundAudio');
+
+  // Iniciar audio al primer click
+  function playAudioOnce() {
+    if(audio.paused){
+      audio.play().catch(()=>console.log("Audio bloqueado hasta interacción del usuario"));
+    }
+  }
+
   function placeInitial(){
     noBtn.style.left="60%";noBtn.style.top="50%";noBtn.style.transform="translate(-20%,-50%)";
     yesBtn.style.left="40%";yesBtn.style.top="50%";yesBtn.style.transform="translate(-150%,-50%)";
@@ -134,12 +140,14 @@
     const maxY=area.height-btnRect.height-padding;
     return {x:Math.random()*maxX+padding,y:Math.random()*maxY+padding};
   }
+
   function moveNoButton(){
     const pos=randomPositionFor(noBtn);
     noBtn.style.left=pos.x+"px";
     noBtn.style.top=pos.y+"px";
     noBtn.style.transform="translate(0,0)";
   }
+
   function handleNoAttempt(e){e.preventDefault();moveNoButton();}
   noBtn.addEventListener('mouseenter',handleNoAttempt);
   noBtn.addEventListener('pointerover',handleNoAttempt);
@@ -147,6 +155,7 @@
   noBtn.addEventListener('click',handleNoAttempt);
 
   yesBtn.addEventListener('click',()=>{
+    playAudioOnce(); // Inicia la música
     overlay.style.display='flex';
     scene1.classList.add('show');
     setTimeout(()=>loveText.classList.add('show'),100);
@@ -205,6 +214,9 @@
       },300);
     }
   });
+
+  // También iniciar audio al hacer click en cualquier parte de la tarjeta
+  playground.addEventListener('click', playAudioOnce);
 })();
 </script>
 </body>
